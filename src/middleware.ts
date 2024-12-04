@@ -2,11 +2,7 @@ import { auth } from "@/auth";
 
 export default auth((req) => {
   // Redirect to login if not authenticated
-  if (
-    !req.auth &&
-    (!req.nextUrl.pathname.startsWith("/auth") ||
-      req.nextUrl.pathname.startsWith("/account"))
-  ) {
+  if (!req.auth && req.nextUrl.pathname.startsWith("/account")) {
     const newUrl = new URL("/auth/login", req.nextUrl.origin);
     // Add the current path as a query parameter
     newUrl.searchParams.set(
@@ -20,12 +16,6 @@ export default auth((req) => {
   if (req.nextUrl.pathname.startsWith("/auth") && req.auth) {
     console.log("Redirecting to /dashboard");
     const newUrl = new URL("/dashboard", req.nextUrl.origin);
-    return Response.redirect(newUrl);
-  }
-
-  if (req.auth && req.nextUrl.pathname.startsWith("/auth")) {
-    console.log("Redirecting to /");
-    const newUrl = new URL("/", req.nextUrl.origin);
     return Response.redirect(newUrl);
   }
 });
