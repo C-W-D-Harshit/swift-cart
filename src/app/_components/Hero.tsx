@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 const featuredProducts = [
   {
@@ -64,9 +65,11 @@ export default function Hero() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Button size="lg" className="w-full sm:w-auto">
-                  Shop Now
-                </Button>
+                <Link href="/shop" className="block">
+                  <Button size="lg" className="w-full sm:w-auto">
+                    Shop Now
+                  </Button>
+                </Link>
               </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
@@ -114,9 +117,11 @@ export default function Hero() {
               <p className="text-sm text-muted-foreground mb-2 sm:mb-3">
                 {featuredProducts[currentProduct].description}
               </p>
-              <Button variant="shine">
-                Shop Now <ArrowRight className="ml-1 h-4 w-4" />
-              </Button>
+              <Link href="/shop">
+                <Button variant="shine">
+                  Shop Now <ArrowRight className="ml-1 h-4 w-4" />
+                </Button>
+              </Link>
             </motion.div>
             <div className="absolute top-4 right-4 flex space-x-2 z-20">
               {featuredProducts.map((_, index) => (
