@@ -1,3 +1,5 @@
 {
-  "cSpell.words": ["cuid", "datasource"]
+  "cSpell.words": ["cuid", "datasource"],
+  "WillLuke.nextjs.addTypesOnSave": true,
+  "WillLuke.nextjs.hasPrompted": true
 }
