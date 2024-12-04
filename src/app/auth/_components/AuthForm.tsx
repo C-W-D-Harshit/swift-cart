@@ -20,6 +20,10 @@ import {
   SignupFormValues,
   ForgotPasswordFormValues,
 } from "@/lib/schemas/auth";
+import { toast } from "sonner";
+import { signIn } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { signUpAction } from "../actions";
 
 interface AuthFormProps extends React.HTMLAttributes<HTMLDivElement> {
   mode: "login" | "signup" | "forgot-password";
@@ -37,7 +41,9 @@ export default function AuthForm({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    setValue,
+
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormValues | SignupFormValues | ForgotPasswordFormValues>({
     resolver: zodResolver(
       mode === "login"
@@ -46,13 +52,76 @@ export default function AuthForm({
         ? signupSchema
         : forgotPasswordSchema
     ),
+    defaultValues: {
+      rememberMe: false,
+    },
   });
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const next = searchParams.get("next");
+
+  const handleSignUp = async (data: SignupFormValues) => {
+    const toastId = toast.loading("Loading...");
+    const { email, password } = data;
+    try {
+      // Handle sign up action
+      const response = await signUpAction(email, password);
+
+      if (!response.success) {
+        throw new Error(response.message);
+      }
+      toast.success(response.message, { id: toastId });
+
+      signIn("credentials", {
+        email,
+        password,
+        redirect: true,
+        redirectTo: "/onboarding",
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message, { id: toastId });
+      } else {
+        toast.error("Something went wrong", { id: toastId });
+      }
+    }
+  };
+
+  const handleLogin = async (data: LoginFormValues) => {
+    const toastId = toast.loading("Loading...");
+    const { email, password } = data;
+    try {
+      const response = await signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      if (response?.error) throw new Error(response.error);
+
+      // Redirect to dashboard
+      router.push(next ?? "/dashboard");
+      toast.success("Logged in successfully", { id: toastId });
+    } catch (error) {
+      if (error instanceof Error) {
+        toast.error(error.message, { id: toastId });
+      } else {
+        toast.error("Something went wrong", { id: toastId });
+      }
+    }
+  };
 
   const onSubmit = (
     data: LoginFormValues | SignupFormValues | ForgotPasswordFormValues
   ) => {
-    console.log(data);
-    // Handle form submission here
+    switch (mode) {
+      case "login":
+        handleLogin(data as LoginFormValues);
+        break;
+      case "signup":
+        handleSignUp(data as SignupFormValues);
+        break;
+    }
   };
 
   return (
@@ -242,7 +311,13 @@ export default function AuthForm({
         {mode === "login" && (
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-2">
-              <Checkbox id="remember" {...register("rememberMe")} />
+              <Checkbox
+                id="remember"
+                {...register("rememberMe")}
+                onCheckedChange={(checked) => {
+                  setValue("rememberMe", checked as boolean);
+                }}
+              />
               <label
                 htmlFor="remember"
                 className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
@@ -260,6 +335,7 @@ export default function AuthForm({
         )}
         <Button
           type="submit"
+          disabled={isSubmitting}
           className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
         >
           {mode === "login"

@@ -2,8 +2,7 @@ import { Metadata } from "next";
 import AuthForm from "../_components/AuthForm";
 
 export const metadata: Metadata = {
-  title: "Login | BR.",
-  description: "Login to your account",
+  title: "Login",
 };
 
 export default function LoginPage() {

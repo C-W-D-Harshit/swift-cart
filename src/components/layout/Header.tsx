@@ -82,14 +82,25 @@ export default function Header() {
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                 >
-                  <Button variant="ghost" size="icon" className="relative">
-                    <Icon className="h-5 w-5" />
-                    {Icon === ShoppingCart && (
-                      <Badge className="absolute -right-1 -top-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
-                        2
-                      </Badge>
-                    )}
-                  </Button>
+                  <Link
+                    href={
+                      index === 2
+                        ? "/account"
+                        : index === 1
+                        ? "/wishlist"
+                        : "/cart"
+                    }
+                    className="block"
+                  >
+                    <Button variant="ghost" size="icon" className="relative">
+                      <Icon className="h-5 w-5" />
+                      {Icon === ShoppingCart && (
+                        <Badge className="absolute -right-1 -top-1 h-4 w-4 p-0 flex items-center justify-center text-[10px]">
+                          2
+                        </Badge>
+                      )}
+                    </Button>
+                  </Link>
                 </motion.div>
               ))}
             </div>

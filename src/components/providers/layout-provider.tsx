@@ -18,11 +18,11 @@ export default function LayoutProvider({
   }
 
   return (
-    <main>
+    <main className="min-h-dvh flex flex-col">
       {/* <AnimatePresence mode="wait"> */}
       <TopHeader />
       <Header />
-      {children}
+      <div className="flex-1">{children}</div>
       <Footer />
       {/* </AnimatePresence> */}
     </main>

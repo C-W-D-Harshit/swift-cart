@@ -2,8 +2,7 @@ import { Metadata } from "next";
 import AuthForm from "../_components/AuthForm";
 
 export const metadata: Metadata = {
-  title: "Forgot Password | BR.",
-  description: "Reset your password",
+  title: "Forgot Password",
 };
 
 export default function ForgotPasswordPage() {
