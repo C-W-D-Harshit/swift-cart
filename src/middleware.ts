@@ -14,8 +14,8 @@ export default auth((req) => {
 
   // Redirect to home if authenticated and trying to access auth pages
   if (req.nextUrl.pathname.startsWith("/auth") && req.auth) {
-    console.log("Redirecting to /dashboard");
-    const newUrl = new URL("/dashboard", req.nextUrl.origin);
+    console.log("Redirecting to /");
+    const newUrl = new URL("/", req.nextUrl.origin);
     return Response.redirect(newUrl);
   }
 });
