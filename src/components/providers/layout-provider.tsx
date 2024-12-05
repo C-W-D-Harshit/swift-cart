@@ -57,15 +57,21 @@ export default function LayoutProvider({
   }
 
   return (
-    <main className="min-h-dvh flex flex-col">
-      <TopLoader />
-      {session && session.user && session.user.role === "ADMIN" && (
-        <AdminWidget />
-      )}
-      <TopHeader />
-      <Header />
-      <div className="flex-1">{children}</div>
-      <Footer />
-    </main>
+    <ThemeProvider
+      attribute="class"
+      forcedTheme="light"
+      disableTransitionOnChange
+    >
+      <main className="min-h-dvh flex flex-col">
+        <TopLoader />
+        {session && session.user && session.user.role === "ADMIN" && (
+          <AdminWidget />
+        )}
+        <TopHeader />
+        <Header />
+        <div className="flex-1">{children}</div>
+        <Footer />
+      </main>
+    </ThemeProvider>
   );
 }
