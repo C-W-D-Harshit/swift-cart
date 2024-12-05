@@ -22,6 +22,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Product, SortConfig } from "../types";
 import AddedDate from "./AddedDate";
+import Link from "next/link";
 
 interface ProductsTableProps {
   products: Product[];
@@ -176,10 +177,12 @@ export default function ProductsTable({
                       <Eye className="h-4 w-4 mr-2" />
                       View
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Pencil className="h-4 w-4 mr-2" />
-                      Edit
-                    </DropdownMenuItem>
+                    <Link href={`/admin/products/${product.id}`}>
+                      <DropdownMenuItem>
+                        <Pencil className="h-4 w-4 mr-2" />
+                        Edit
+                      </DropdownMenuItem>
+                    </Link>
                     <DropdownMenuItem className="text-destructive">
                       <Trash2 className="h-4 w-4 mr-2" />
                       Delete

@@ -8,6 +8,7 @@ import { products } from "../data";
 import { FilterStatus, Product, SortConfig } from "../types";
 import ProductFilters from "./ProductFilters";
 import ProductsTable from "./ProductsTable";
+import Link from "next/link";
 
 interface ProductFilters {
   status: FilterStatus;
@@ -71,10 +72,12 @@ export default function ProductsView() {
     <div className="flex-1 flex flex-col">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 lg:mb-6 gap-4">
         <h1 className="text-2xl font-bold">Products</h1>
-        <Button>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Product
-        </Button>
+        <Link href="/admin/products/create">
+          <Button>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
+        </Link>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4 mb-4 lg:mb-6">
