@@ -76,7 +76,7 @@ export default function AuthForm({
         email,
         password,
         redirect: true,
-        redirectTo: "/onboarding",
+        redirectTo: "/",
       });
     } catch (error) {
       if (error instanceof Error) {
@@ -100,7 +100,7 @@ export default function AuthForm({
       if (response?.error) throw new Error(response.error);
 
       // Redirect to dashboard
-      router.push(next ?? "/dashboard");
+      router.push(next ?? "/");
       toast.success("Logged in successfully", { id: toastId });
     } catch (error) {
       if (error instanceof Error) {

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { signOut } from "next-auth/react";
+import Link from "next/link";
 
 export default function AdminWidget() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,9 +34,11 @@ export default function AdminWidget() {
             exit={{ opacity: 0, y: 10 }}
           >
             <h3 className="font-semibold mb-2">Admin Panel</h3>
-            <Button className="w-full mb-2" variant="default">
-              Go to Dashboard
-            </Button>
+            <Link href="/admin">
+              <Button className="w-full mb-2" variant="default">
+                Go to Dashboard
+              </Button>
+            </Link>
             <Button
               className="w-full"
               variant="secondary"
