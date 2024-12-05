@@ -2,6 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Users, CreditCard, Activity } from "lucide-react";
 import RecentOrders from "./RecentOrders";
 import SalesChart from "./SalesChart";
+import TopSellingProducts from "./TopSellingProducts";
+import RevenueBreakdown from "./RevenueBreakdown";
+import OrderStatusChart from "./OrderStatusChart";
 
 export default function AdminDashboard() {
   return (
@@ -59,7 +62,7 @@ export default function AdminDashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4">
           <CardHeader>
-            <CardTitle>Overview</CardTitle>
+            <CardTitle>Sales Overview</CardTitle>
           </CardHeader>
           <CardContent className="pl-2">
             <SalesChart />
@@ -68,6 +71,27 @@ export default function AdminDashboard() {
         <div className="col-span-3">
           <RecentOrders />
         </div>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div className="col-span-4 h-full">
+          <TopSellingProducts />
+        </div>
+        <div className="col-span-3">
+          <RevenueBreakdown />
+        </div>
+      </div>
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <Card className="col-span-4">
+          <OrderStatusChart />
+        </Card>
+        <Card className="col-span-3">
+          <CardHeader>
+            <CardTitle>Recent Activity</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <p>Activity feed coming soon...</p>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

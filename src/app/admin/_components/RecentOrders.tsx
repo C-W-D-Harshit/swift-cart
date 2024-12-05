@@ -35,7 +35,7 @@ const recentOrders = [
 
 export default function RecentOrders() {
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <CardTitle>Recent Orders</CardTitle>
       </CardHeader>

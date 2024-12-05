@@ -26,7 +26,7 @@ const data = [
 
 export default function SalesChart() {
   return (
-    <ResponsiveContainer width="100%" height={350}>
+    <ResponsiveContainer className={"w-full"} width="100%" height={350}>
       <AreaChart data={data}>
         <XAxis
           dataKey="name"

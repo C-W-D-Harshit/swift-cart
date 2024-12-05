@@ -4,6 +4,7 @@ import "./globals.css";
 import LayoutProvider from "@/components/providers/layout-provider";
 import { Toaster } from "@/components/ui/sonner";
 import { Suspense } from "react";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -35,8 +36,10 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         <Suspense>
-          <LayoutProvider>{children}</LayoutProvider>
-          <Toaster />
+          <SessionProvider>
+            <LayoutProvider>{children}</LayoutProvider>
+            <Toaster />
+          </SessionProvider>
         </Suspense>
       </body>
     </html>

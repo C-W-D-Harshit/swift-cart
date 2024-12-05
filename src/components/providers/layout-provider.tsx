@@ -6,6 +6,15 @@ import Footer from "../layout/Footer";
 import TopHeader from "../layout/TopHeader";
 import { usePathname } from "next/navigation";
 import TopLoader from "../loaders/TopLoader";
+import { ThemeProvider } from "./theme-provider";
+import { Separator } from "@/components/ui/separator";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "@/components/ui/sidebar";
+import { AppSidebar } from "../layout/admin/AppSidebar";
+import { DynamicBreadcrumb } from "../layout/admin/dynamic-breadcrumb";
 
 export default function LayoutProvider({
   children,
@@ -19,7 +28,29 @@ export default function LayoutProvider({
   }
 
   if (pathname.startsWith("/admin")) {
-    return <>{children}</>;
+    return (
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
+        <TopLoader />
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset className="overflow-hidden overflow-y-auto">
+            <header className="flex h-16 shrink-0 items-center gap-2 sticky top-1">
+              <div className="flex items-center gap-2 px-4">
+                <SidebarTrigger className="-ml-1" />
+                <Separator orientation="vertical" className="mr-2 h-4" />
+                <DynamicBreadcrumb />
+              </div>
+            </header>
+            <main className="flex-1 flex flex-col p-6">{children}</main>
+          </SidebarInset>
+        </SidebarProvider>
+      </ThemeProvider>
+    );
   }
 
   return (
