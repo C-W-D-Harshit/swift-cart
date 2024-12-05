@@ -5,6 +5,7 @@ import Header from "../layout/Header";
 import Footer from "../layout/Footer";
 import TopHeader from "../layout/TopHeader";
 import { usePathname } from "next/navigation";
+import TopLoader from "../loaders/TopLoader";
 
 export default function LayoutProvider({
   children,
@@ -19,12 +20,11 @@ export default function LayoutProvider({
 
   return (
     <main className="min-h-dvh flex flex-col">
-      {/* <AnimatePresence mode="wait"> */}
+      <TopLoader />
       <TopHeader />
       <Header />
       <div className="flex-1">{children}</div>
       <Footer />
-      {/* </AnimatePresence> */}
     </main>
   );
 }
