@@ -1,10 +1,25 @@
 import { auth } from "@/auth";
 
 export default auth((req) => {
-  // Redirect to login if not authenticated
-  if (req.nextUrl.pathname.startsWith("/account") && !req.auth) {
+  console.log("Auth middleware");
+  console.log(req.auth);
+  // Redirect to login if not authenticated and trying to access private routes (admin)
+  if (
+    req.nextUrl.pathname.startsWith("/admin") &&
+    req.auth &&
+    req.auth.user.role !== "ADMIN"
+  ) {
+    const newUrl = new URL("/", req.nextUrl.origin);
+
+    return Response.redirect(newUrl);
+  }
+  // Add more private routes
+  const privateRoutes = ["/account", "/admin", "/profile"];
+  if (
+    privateRoutes.some((route) => req.nextUrl.pathname.startsWith(route)) &&
+    !req.auth
+  ) {
     const newUrl = new URL("/auth/login", req.nextUrl.origin);
-    // Add the current path as a query parameter
     newUrl.searchParams.set(
       "next",
       req.nextUrl.pathname ? req.nextUrl.pathname + req.nextUrl.search : "/"

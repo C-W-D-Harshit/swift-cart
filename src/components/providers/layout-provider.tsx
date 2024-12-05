@@ -18,6 +18,10 @@ export default function LayoutProvider({
     return <>{children}</>;
   }
 
+  if (pathname.startsWith("/admin")) {
+    return <>{children}</>;
+  }
+
   return (
     <main className="min-h-dvh flex flex-col">
       <TopLoader />
