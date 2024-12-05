@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/sidebar";
 import { AppSidebar } from "../layout/admin/AppSidebar";
 import { DynamicBreadcrumb } from "../layout/admin/dynamic-breadcrumb";
+import AdminWidget from "../AdminWidget";
+import { useSession } from "next-auth/react";
 
 export default function LayoutProvider({
   children,
@@ -22,6 +24,7 @@ export default function LayoutProvider({
   children: React.ReactNode;
 }>) {
   const pathname = usePathname();
+  const { data: session } = useSession();
 
   if (pathname.startsWith("/auth")) {
     return <>{children}</>;
@@ -56,6 +59,9 @@ export default function LayoutProvider({
   return (
     <main className="min-h-dvh flex flex-col">
       <TopLoader />
+      {session && session.user && session.user.role === "ADMIN" && (
+        <AdminWidget />
+      )}
       <TopHeader />
       <Header />
       <div className="flex-1">{children}</div>
