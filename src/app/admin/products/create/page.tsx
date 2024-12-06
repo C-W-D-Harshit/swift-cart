@@ -1,5 +1,5 @@
 import { Metadata } from "next";
-import CreateProductForm from "./_components/CreateProductForm";
+import { CreateProductForm } from "./_components/CreateProductForm";
 
 export const metadata: Metadata = {
   title: "Create Product | Admin Dashboard",
