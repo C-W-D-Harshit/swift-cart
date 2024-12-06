@@ -7,15 +7,25 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Currency {
+  USD
+  EUR
+  GBP
+  INR
+}
+
 model User {
   id             String      @id @default(cuid())
-  email          String      @unique
-  hashedPassword String
-  fullName       String?
-  phoneNumber    String?     @unique
+  email          String      @unique @db.VarChar(255)
+  hashedPassword String      @db.VarChar(255)
+  fullName       String?     @db.VarChar(100)
+  phoneNumber    String?     @unique @db.VarChar(20)
   avatarUrl      String?
+  avatarPublicId String?
   role           Role        @default(USER)
   isActive       Boolean     @default(true)
+  isDeleted      Boolean     @default(false)
+  lastLoginAt    DateTime?
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
 
@@ -30,107 +40,147 @@ model User {
 }
 
 model Product {
-  id          String    @id @default(cuid())
-  name        String
-  description String
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  name          String    @db.VarChar(200)
+  description   String    @db.Text
+  slug          String    @unique
+  price         Decimal?  @db.Decimal(10, 2)
+  currency      Currency  @default(USD)
+  stock         Int?      
+  sku           String?   @unique @db.VarChar(50)
+  images        String[]  // For products without variations
+  imagePublicIds  String[]  // For products without variations
+  isActive      Boolean   @default(true)
+  isDeleted     Boolean   @default(false)
+  isPublished   Boolean   @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
 
   // Relationships
-  category    Category  @relation(fields: [categoryId], references: [id])
-  categoryId  String
-  reviews     Review[]
-  variants    ProductVariant[]
-  variantTypes VariantType[]
+  category      Category  @relation(fields: [categoryId], references: [id])
+  categoryId    String
+  reviews       Review[]
+  variations    ProductVariation[]
+  attributes    Attribute[]        // New relationship
 
   @@map("products")
   @@index([categoryId])
+  @@index([slug])
+  @@index([isPublished, isDeleted])
 }
 
-model ProductVariant {
-  id          String    @id @default(cuid())
-  sku         String    @unique
-  price       Decimal   @db.Decimal(10, 2)
-  stock       Int       @default(0)
-  images      String[]
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+model Attribute {
+  id            String    @id @default(cuid())
+  name          String    @db.VarChar(50) // e.g., "Color", "Size", "Material"
+  description   String?   @db.Text
+  isRequired    Boolean   @default(false)
+  displayOrder  Int       @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
 
   // Relationships
-  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  productId   String
-  options     VariantOption[]
-  cartItems   CartItem[]
-  orderItems  OrderItem[]
-  reviews     Review[]    // Add reviews to variant level
+  products      Product[]
+  values        AttributeValue[]
 
-  @@map("product_variants")
+  @@map("attributes")
+  @@unique([name])
+  @@index([displayOrder])
+}
+
+model AttributeValue {
+  id          String    @id @default(cuid())
+  value       String    // e.g., "Red", "XL", "Cotton"
+  
+  // Relationships
+  attribute   Attribute @relation(fields: [attributeId], references: [id])
+  attributeId String
+  variations  ProductVariation[]
+
+  @@map("attribute_values")
+  @@unique([value, attributeId])
+}
+
+model ProductVariation {
+  id            String    @id @default(cuid())
+  sku           String    @unique
+  price         Decimal   @db.Decimal(10, 2)
+  comparePrice  Decimal?  @db.Decimal(10, 2)  // Original/before discount price
+  currency      Currency  @default(USD)
+  stock         Int       @default(0)
+  weight        Decimal?  @db.Decimal(10, 3)
+  dimensions    Json?     // {length, width, height}
+  images        String[]
+  imagePublicIds  String[]
+  isActive      Boolean   @default(true)
+  isDeleted     Boolean   @default(false)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relationships
+  product       Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId     String
+  attributes    AttributeValue[]  // Changed from options
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+  reviews       Review[]
+
+  @@map("product_variations")
   @@index([productId])
   @@index([sku])
 }
 
-model VariantType {
-  id          String    @id @default(cuid())
-  name        String    // e.g., "Size", "Color", "Material"
-  
-  // Relationships
-  product     Product   @relation(fields: [productId], references: [id])
-  productId   String
-  options     VariantOption[]
-
-  @@map("variant_types")
-  @@unique([name, productId])
-}
-
-model VariantOption {
-  id            String    @id @default(cuid())
-  value         String    // e.g., "Red", "XL", "Cotton"
-  
-  // Relationships
-  variantType   VariantType @relation(fields: [variantTypeId], references: [id])
-  variantTypeId String
-  variants      ProductVariant[]
-
-  @@map("variant_options")
-  @@unique([value, variantTypeId])
-}
-
 model Category {
-  id          String    @id @default(cuid())
-  name        String    @unique
-  description String?
-  imageUrl    String?
-  isActive    Boolean   @default(true)
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id            String    @id @default(cuid())
+  name          String    @unique
+  description   String?
+  imageUrl      String?
+  imagePublicId String?
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @default(now())
 
   // Relationships
-  products    Product[]
-  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
-  parentId    String?
-  children    Category[] @relation("CategoryHierarchy")
+  products      Product[]
+  parent        Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  parentId      String?
+  children      Category[] @relation("CategoryHierarchy")
 
   @@map("categories")
 }
 
 model Order {
-  id              String      @id @default(cuid())
-  status          OrderStatus @default(PENDING)
-  total           Decimal     @db.Decimal(10, 2)
-  shippingAddress String
+  id              String        @id @default(cuid())
+  orderNumber     String        @unique  // Human readable order number
+  status          OrderStatus   @default(PENDING)
+  total           Decimal       @db.Decimal(10, 2)
+  subtotal        Decimal       @db.Decimal(10, 2)
+  tax             Decimal       @db.Decimal(10, 2)
+  shipping        Decimal       @db.Decimal(10, 2)
+  currency        Currency      @default(USD)
+  shippingAddress Json         // Stored as JSON to keep address snapshot
+  billingAddress  Json?        // Optional different billing address
   paymentStatus   PaymentStatus @default(PENDING)
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  paymentMethod   PaymentMethod?
+  paymentIntentId String?      // For payment gateway reference
+  notes           String?       @db.Text
+  trackingNumber  String?      
+  carrierName     String?
+  cancelReason    String?      @db.Text
+  refundedAmount  Decimal?     @db.Decimal(10, 2)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
   // Relationships
-  user           User        @relation(fields: [userId], references: [id])
+  user           User          @relation(fields: [userId], references: [id])
   userId         String
   orderItems     OrderItem[]
 
   @@map("orders")
   @@index([userId])
+  @@index([orderNumber])
+  @@index([status, paymentStatus])
+  @@index([userId, createdAt])
 }
 
 model OrderItem {
@@ -141,12 +191,12 @@ model OrderItem {
   // Relationships
   order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   orderId       String
-  variant       ProductVariant  @relation(fields: [variantId], references: [id])
-  variantId     String
+  variation     ProductVariation  @relation(fields: [variationId], references: [id])
+  variationId   String
 
   @@map("order_items")
   @@index([orderId])
-  @@index([variantId])
+  @@index([variationId])
 }
 
 model Cart {
@@ -169,14 +219,12 @@ model CartItem {
   // Relationships
   cart          Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
   cartId        String
-  variant       ProductVariant  @relation(fields: [variantId], references: [id])
-  variantId     String
+  variation     ProductVariation  @relation(fields: [variationId], references: [id])
+  variationId   String
 
   @@map("cart_items")
   @@index([cartId])
-  @@index([variantId])
-
-  
+  @@index([variationId])
 }
 
 model Review {
@@ -191,13 +239,13 @@ model Review {
   userId    String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   productId String
-  variant   ProductVariant? @relation(fields: [variantId], references: [id])
-  variantId String?
+  variation   ProductVariation? @relation(fields: [variationId], references: [id])
+  variationId String?
 
   @@map("reviews")
   @@index([userId])
   @@index([productId])
-  @@index([variantId])
+  @@index([variationId])
 }
 
 model Address {
@@ -226,14 +274,32 @@ enum Role {
 enum OrderStatus {
   PENDING
   PROCESSING
+  PAYMENT_PENDING
+  PAYMENT_FAILED
+  CONFIRMED
   SHIPPED
+  OUT_FOR_DELIVERY
   DELIVERED
   CANCELLED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  RETURNED
 }
 
 enum PaymentStatus {
   PENDING
+  AUTHORIZED
   PAID
-  FAILED
+  PARTIALLY_REFUNDED
   REFUNDED
+  FAILED
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentMethod {
+  CREDIT_CARD
+  PAYPAL
+  BANK_TRANSFER
+  CRYPTO
 }
