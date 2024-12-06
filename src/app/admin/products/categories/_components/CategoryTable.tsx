@@ -24,144 +24,167 @@ import {
   ChevronRight,
   Copy,
   PencilIcon,
-  X,
-  Check,
+  Plus,
 } from "lucide-react";
 
 interface Category {
-  id: number;
+  id: string;
   name: string;
-  count: number;
-  productCount: number;
-  status: "active" | "inactive";
-  featured: boolean;
-  level: number;
-  parentId: number | null;
-  isExpanded?: boolean;
+  description: string | null;
+  imageUrl: string | null;
+  imagePublicId: string | null;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  parentId: string | null;
+  children: Category[];
+  products: { id: string }[];
 }
 
 const ITEMS_PER_PAGE = 10;
 
 const mockCategories: Category[] = [
   {
-    id: 1,
+    id: "1",
     name: "Clothes",
-    count: 14,
-    productCount: 3,
-    status: "active",
-    featured: false,
-    level: 0,
+    description: "All types of clothing",
+    imageUrl: null,
+    imagePublicId: null,
+    isActive: true,
+    createdAt: new Date("2023-01-01"),
+    updatedAt: new Date("2023-01-01"),
     parentId: null,
+    children: [
+      {
+        id: "2",
+        name: "Clothes for women",
+        description: "Women's clothing",
+        imageUrl: null,
+        imagePublicId: null,
+        isActive: true,
+        createdAt: new Date("2023-01-02"),
+        updatedAt: new Date("2023-01-02"),
+        parentId: "1",
+        children: [],
+        products: [
+          { id: "p4" },
+          { id: "p5" },
+          { id: "p6" },
+          { id: "p7" },
+          { id: "p8" },
+        ],
+      },
+      {
+        id: "3",
+        name: "Clothes for Kids",
+        description: "Children's clothing",
+        imageUrl: null,
+        imagePublicId: null,
+        isActive: true,
+        createdAt: new Date("2023-01-03"),
+        updatedAt: new Date("2023-01-03"),
+        parentId: "1",
+        children: [
+          {
+            id: "6",
+            name: "Fall-Winter 2017",
+            description: "Fall and Winter collection for 2017",
+            imageUrl: null,
+            imagePublicId: null,
+            isActive: true,
+            createdAt: new Date("2023-01-06"),
+            updatedAt: new Date("2023-01-06"),
+            parentId: "3",
+            children: [],
+            products: [],
+          },
+          {
+            id: "7",
+            name: "Spring-Summer 2018",
+            description: "Spring and Summer collection for 2018",
+            imageUrl: null,
+            imagePublicId: null,
+            isActive: true,
+            createdAt: new Date("2023-01-07"),
+            updatedAt: new Date("2023-01-07"),
+            parentId: "3",
+            children: [],
+            products: [
+              { id: "p14" },
+              { id: "p15" },
+              { id: "p16" },
+              { id: "p17" },
+              { id: "p18" },
+              { id: "p19" },
+              { id: "p20" },
+              { id: "p21" },
+              { id: "p22" },
+            ],
+          },
+        ],
+        products: [],
+      },
+      {
+        id: "8",
+        name: "Clothes for men",
+        description: "Men's clothing",
+        imageUrl: null,
+        imagePublicId: null,
+        isActive: false,
+        createdAt: new Date("2023-01-08"),
+        updatedAt: new Date("2023-01-08"),
+        parentId: "1",
+        children: [],
+        products: [
+          { id: "p23" },
+          { id: "p24" },
+          { id: "p25" },
+          { id: "p26" },
+          { id: "p27" },
+          { id: "p28" },
+          { id: "p29" },
+          { id: "p30" },
+          { id: "p31" },
+          { id: "p32" },
+          { id: "p33" },
+          { id: "p34" },
+          { id: "p35" },
+        ],
+      },
+    ],
+    products: [{ id: "p1" }, { id: "p2" }, { id: "p3" }],
   },
   {
-    id: 2,
-    name: "Clothes for women",
-    count: 7,
-    productCount: 5,
-    status: "inactive",
-    featured: true,
-    level: 1,
-    parentId: 1,
-  },
-  {
-    id: 3,
-    name: "Clothes for Kids",
-    count: 2,
-    productCount: 0,
-    status: "active",
-    featured: false,
-    level: 1,
-    parentId: 1,
-  },
-  {
-    id: 4,
-    name: "Fall-Winter 2017",
-    count: 0,
-    productCount: 0,
-    status: "active",
-    featured: true,
-    level: 2,
-    parentId: 3,
-  },
-  {
-    id: 5,
-    name: "Spring-Summer 2018",
-    count: 0,
-    productCount: 9,
-    status: "active",
-    featured: true,
-    level: 2,
-    parentId: 3,
-  },
-  {
-    id: 6,
-    name: "Clothes for men",
-    count: 6,
-    productCount: 13,
-    status: "inactive",
-    featured: false,
-    level: 1,
-    parentId: 1,
-  },
-  {
-    id: 7,
-    name: "Clothes",
-    count: 12,
-    productCount: 0,
-    status: "inactive",
-    featured: false,
-    level: 0,
-    parentId: null,
-  },
-  {
-    id: 8,
-    name: "Clothes",
-    count: 12,
-    productCount: 10,
-    status: "active",
-    featured: true,
-    level: 0,
-    parentId: null,
-  },
-  {
-    id: 9,
+    id: "4",
     name: "Shoes",
-    count: 15,
-    productCount: 0,
-    status: "active",
-    featured: false,
-    level: 0,
+    description: "All types of footwear",
+    imageUrl: null,
+    imagePublicId: null,
+    isActive: true,
+    createdAt: new Date("2023-01-04"),
+    updatedAt: new Date("2023-01-04"),
     parentId: null,
+    children: [],
+    products: [],
   },
   {
-    id: 10,
+    id: "5",
     name: "Health and Beauty",
-    count: 10,
-    productCount: 5,
-    status: "inactive",
-    featured: true,
-    level: 0,
+    description: "Health and beauty products",
+    imageUrl: null,
+    imagePublicId: null,
+    isActive: false,
+    createdAt: new Date("2023-01-05"),
+    updatedAt: new Date("2023-01-05"),
     parentId: null,
-  },
-  {
-    id: 11,
-    name: "Ralph Lauren",
-    count: 0,
-    productCount: 3,
-    status: "active",
-    featured: false,
-    level: 0,
-    parentId: null,
-  },
-  {
-    id: 12,
-    name: "Alienware",
-    count: 0,
-    productCount: 11,
-    status: "inactive",
-    featured: true,
-    level: 0,
-    parentId: null,
+    children: [],
+    products: [
+      { id: "p9" },
+      { id: "p10" },
+      { id: "p11" },
+      { id: "p12" },
+      { id: "p13" },
+    ],
   },
 ];
 
@@ -169,13 +192,15 @@ export default function CategoryTable() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [expandedCategories, setExpandedCategories] = useState<Set<number>>(
-    new Set([1])
+  const [categories, setCategories] = useState<
+    (Category & { level: number })[]
+  >([]);
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
+    new Set(["1"])
   );
   const [totalPages, setTotalPages] = useState(1);
 
-  const toggleCategory = (categoryId: number) => {
+  const toggleCategory = (categoryId: string) => {
     setExpandedCategories((prev) => {
       const next = new Set(prev);
       if (next.has(categoryId)) {
@@ -188,24 +213,32 @@ export default function CategoryTable() {
   };
 
   useEffect(() => {
-    const visibleCategories = mockCategories.filter((category) => {
-      if (category.level === 0) return true;
-
-      let parent = mockCategories.find((c) => c.id === category.parentId);
-      while (parent) {
-        if (!expandedCategories.has(parent.id)) return false;
-        parent = mockCategories.find((c) => c.id === parent?.parentId);
-      }
-      return true;
-    });
-
+    const flattenCategories = (
+      categories: Category[],
+      level = 0
+    ): (Category & { level: number })[] => {
+      return categories.flatMap((category) => {
+        const flattenedCategory = { ...category, level };
+        if (
+          expandedCategories.has(category.id) &&
+          category.children.length > 0
+        ) {
+          return [
+            flattenedCategory,
+            ...flattenCategories(category.children, level + 1),
+          ];
+        }
+        return [flattenedCategory];
+      });
+    };
+    const flattenedCategories = flattenCategories(mockCategories);
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
-    const paginatedData = visibleCategories.slice(
+    const paginatedData = flattenedCategories.slice(
       start,
       start + ITEMS_PER_PAGE
     );
     setCategories(paginatedData);
-    setTotalPages(Math.ceil(visibleCategories.length / ITEMS_PER_PAGE));
+    setTotalPages(Math.ceil(flattenedCategories.length / ITEMS_PER_PAGE));
   }, [currentPage, expandedCategories]);
 
   const createQueryString = useCallback(
@@ -219,15 +252,20 @@ export default function CategoryTable() {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Input placeholder="Search" className="max-w-xs" />
-        <Button variant="outline">Filters</Button>
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Input placeholder="Search categories" className="max-w-xs" />
+          <Button variant="outline">Filters</Button>
+        </div>
+        <Button>
+          <Plus className="mr-2 h-4 w-4" /> Create Category
+        </Button>
       </div>
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="w-[400px]">Name</TableHead>
-            <TableHead>Featured</TableHead>
+            <TableHead className="w-[300px]">Name</TableHead>
+            <TableHead>Description</TableHead>
             <TableHead>Products</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
@@ -241,35 +279,27 @@ export default function CategoryTable() {
                   className="flex items-center gap-2"
                   style={{ paddingLeft: `${category.level * 24}px` }}
                 >
-                  <button
-                    onClick={() => toggleCategory(category.id)}
-                    className="p-1 hover:bg-accent rounded-sm"
-                  >
-                    {expandedCategories.has(category.id) ? (
-                      <ChevronDown className="h-4 w-4" />
-                    ) : (
-                      <ChevronRight className="h-4 w-4" />
-                    )}
-                  </button>
-                  <span className="font-medium">
-                    {category.name} ({category.count})
-                  </span>
+                  {category.children.length > 0 && (
+                    <button
+                      onClick={() => toggleCategory(category.id)}
+                      className="p-1 hover:bg-accent rounded-sm"
+                    >
+                      {expandedCategories.has(category.id) ? (
+                        <ChevronDown className="h-4 w-4" />
+                      ) : (
+                        <ChevronRight className="h-4 w-4" />
+                      )}
+                    </button>
+                  )}
+                  <span className="font-medium">{category.name}</span>
                 </div>
               </TableCell>
+              <TableCell>{category.description || "-"}</TableCell>
+              <TableCell>{category.products.length} products</TableCell>
               <TableCell>
-                {category.featured ? (
-                  <Check className="h-4 w-4 text-primary" />
-                ) : (
-                  <X className="h-4 w-4 text-muted-foreground" />
-                )}
-              </TableCell>
-              <TableCell>
-                {category.productCount > 0
-                  ? `${category.productCount} products`
-                  : "-"}
-              </TableCell>
-              <TableCell>
-                <Select defaultValue={category.status}>
+                <Select
+                  defaultValue={category.isActive ? "active" : "inactive"}
+                >
                   <SelectTrigger className="w-[100px]">
                     <SelectValue />
                   </SelectTrigger>
