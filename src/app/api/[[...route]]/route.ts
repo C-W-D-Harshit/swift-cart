@@ -1,21 +1,12 @@
-import { Hono } from "hono";
+// Import the Hono app instance and Vercel edge handler
+import app from "@/server/app";
 import { handle } from "hono/vercel";
-import { poweredBy } from "hono/powered-by";
-import { logger } from "hono/logger";
 
-export const runtime = "edge";
+// Specify that this API route runs on Vercel's Node.js runtime
+export const runtime = "nodejs";
 
-const app = new Hono().basePath("/api");
-
-app.use(poweredBy());
-app.use(logger());
-
-app.get("/hello", (c) => {
-  return c.json({
-    message: "Hello Next.js!",
-  });
-});
-
+// Export handlers for different HTTP methods
+// These handlers will process incoming requests using the Hono app
 export const OPTIONS = handle(app);
 export const GET = handle(app);
 export const POST = handle(app);

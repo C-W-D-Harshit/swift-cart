@@ -20,12 +20,220 @@ model User {
   updatedAt      DateTime    @updatedAt
 
   // Relationships
+  orders         Order[]
+  cart           Cart?
+  reviews        Review[]
+  addresses      Address[]
 
-  @@map("users") // Custom table name in the database
+  @@map("users")
+  @@index([email])
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  name        String
+  description String
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  reviews     Review[]
+  variants    ProductVariant[]
+  variantTypes VariantType[]
+
+  @@map("products")
+  @@index([categoryId])
+}
+
+model ProductVariant {
+  id          String    @id @default(cuid())
+  sku         String    @unique
+  price       Decimal   @db.Decimal(10, 2)
+  stock       Int       @default(0)
+  images      String[]
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  product     Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId   String
+  options     VariantOption[]
+  cartItems   CartItem[]
+  orderItems  OrderItem[]
+  reviews     Review[]    // Add reviews to variant level
+
+  @@map("product_variants")
+  @@index([productId])
+  @@index([sku])
+}
+
+model VariantType {
+  id          String    @id @default(cuid())
+  name        String    // e.g., "Size", "Color", "Material"
+  
+  // Relationships
+  product     Product   @relation(fields: [productId], references: [id])
+  productId   String
+  options     VariantOption[]
+
+  @@map("variant_types")
+  @@unique([name, productId])
+}
+
+model VariantOption {
+  id            String    @id @default(cuid())
+  value         String    // e.g., "Red", "XL", "Cotton"
+  
+  // Relationships
+  variantType   VariantType @relation(fields: [variantTypeId], references: [id])
+  variantTypeId String
+  variants      ProductVariant[]
+
+  @@map("variant_options")
+  @@unique([value, variantTypeId])
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String    @unique
+  description String?
+  imageUrl    String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relationships
+  products    Product[]
+  parent      Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  parentId    String?
+  children    Category[] @relation("CategoryHierarchy")
+
+  @@map("categories")
+}
+
+model Order {
+  id              String      @id @default(cuid())
+  status          OrderStatus @default(PENDING)
+  total           Decimal     @db.Decimal(10, 2)
+  shippingAddress String
+  paymentStatus   PaymentStatus @default(PENDING)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relationships
+  user           User        @relation(fields: [userId], references: [id])
+  userId         String
+  orderItems     OrderItem[]
+
+  @@map("orders")
+  @@index([userId])
+}
+
+model OrderItem {
+  id            String   @id @default(cuid())
+  quantity      Int
+  price         Decimal  @db.Decimal(10, 2)
+  
+  // Relationships
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId       String
+  variant       ProductVariant  @relation(fields: [variantId], references: [id])
+  variantId     String
+
+  @@map("order_items")
+  @@index([orderId])
+  @@index([variantId])
+}
+
+model Cart {
+  id        String     @id @default(cuid())
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  // Relationships
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String     @unique
+  items     CartItem[]
+
+  @@map("carts")
+}
+
+model CartItem {
+  id            String   @id @default(cuid())
+  quantity      Int
+  
+  // Relationships
+  cart          Cart     @relation(fields: [cartId], references: [id], onDelete: Cascade)
+  cartId        String
+  variant       ProductVariant  @relation(fields: [variantId], references: [id])
+  variantId     String
+
+  @@map("cart_items")
+  @@index([cartId])
+  @@index([variantId])
+
+  
+}
+
+model Review {
+  id        String   @id @default(cuid())
+  rating    Int      @db.SmallInt
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+  variant   ProductVariant? @relation(fields: [variantId], references: [id])
+  variantId String?
+
+  @@map("reviews")
+  @@index([userId])
+  @@index([productId])
+  @@index([variantId])
+}
+
+model Address {
+  id           String   @id @default(cuid())
+  street       String
+  city         String
+  state        String
+  postalCode   String
+  country      String
+  isDefault    Boolean  @default(false)
+  
+  // Relationships
+  user         User     @relation(fields: [userId], references: [id])
+  userId       String
+
+  @@map("addresses")
+  @@index([userId])
 }
 
 enum Role {
   ADMIN
   USER
   MODERATOR
+}
+
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
 }
