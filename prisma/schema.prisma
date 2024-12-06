@@ -7,13 +7,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-enum Currency {
-  USD
-  EUR
-  GBP
-  INR
-}
-
 model User {
   id             String      @id @default(cuid())
   email          String      @unique @db.VarChar(255)
@@ -45,7 +38,6 @@ model Product {
   description   String    @db.Text
   slug          String    @unique
   price         Decimal?  @db.Decimal(10, 2)
-  currency      Currency  @default(USD)
   stock         Int?      
   sku           String?   @unique @db.VarChar(50)
   images        String[]  // For products without variations
@@ -106,7 +98,6 @@ model ProductVariation {
   sku           String    @unique
   price         Decimal   @db.Decimal(10, 2)
   comparePrice  Decimal?  @db.Decimal(10, 2)  // Original/before discount price
-  currency      Currency  @default(USD)
   stock         Int       @default(0)
   weight        Decimal?  @db.Decimal(10, 3)
   dimensions    Json?     // {length, width, height}
@@ -157,7 +148,6 @@ model Order {
   subtotal        Decimal       @db.Decimal(10, 2)
   tax             Decimal       @db.Decimal(10, 2)
   shipping        Decimal       @db.Decimal(10, 2)
-  currency        Currency      @default(USD)
   shippingAddress Json         // Stored as JSON to keep address snapshot
   billingAddress  Json?        // Optional different billing address
   paymentStatus   PaymentStatus @default(PENDING)
