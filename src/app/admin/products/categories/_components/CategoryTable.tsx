@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -28,173 +29,20 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-interface Category {
-  id: string;
-  name: string;
-  description: string | null;
-  imageUrl: string | null;
-  imagePublicId: string | null;
-  isActive: boolean;
-  createdAt: Date;
-  updatedAt: Date;
-  parentId: string | null;
-  children: Category[];
-  products: { id: string }[];
-}
-
 const ITEMS_PER_PAGE = 10;
 
-const mockCategories: Category[] = [
-  {
-    id: "1",
-    name: "Clothes",
-    description: "All types of clothing",
-    imageUrl: null,
-    imagePublicId: null,
-    isActive: true,
-    createdAt: new Date("2023-01-01"),
-    updatedAt: new Date("2023-01-01"),
-    parentId: null,
-    children: [
-      {
-        id: "2",
-        name: "Clothes for women",
-        description: "Women's clothing",
-        imageUrl: null,
-        imagePublicId: null,
-        isActive: true,
-        createdAt: new Date("2023-01-02"),
-        updatedAt: new Date("2023-01-02"),
-        parentId: "1",
-        children: [],
-        products: [
-          { id: "p4" },
-          { id: "p5" },
-          { id: "p6" },
-          { id: "p7" },
-          { id: "p8" },
-        ],
-      },
-      {
-        id: "3",
-        name: "Clothes for Kids",
-        description: "Children's clothing",
-        imageUrl: null,
-        imagePublicId: null,
-        isActive: true,
-        createdAt: new Date("2023-01-03"),
-        updatedAt: new Date("2023-01-03"),
-        parentId: "1",
-        children: [
-          {
-            id: "6",
-            name: "Fall-Winter 2017",
-            description: "Fall and Winter collection for 2017",
-            imageUrl: null,
-            imagePublicId: null,
-            isActive: true,
-            createdAt: new Date("2023-01-06"),
-            updatedAt: new Date("2023-01-06"),
-            parentId: "3",
-            children: [],
-            products: [],
-          },
-          {
-            id: "7",
-            name: "Spring-Summer 2018",
-            description: "Spring and Summer collection for 2018",
-            imageUrl: null,
-            imagePublicId: null,
-            isActive: true,
-            createdAt: new Date("2023-01-07"),
-            updatedAt: new Date("2023-01-07"),
-            parentId: "3",
-            children: [],
-            products: [
-              { id: "p14" },
-              { id: "p15" },
-              { id: "p16" },
-              { id: "p17" },
-              { id: "p18" },
-              { id: "p19" },
-              { id: "p20" },
-              { id: "p21" },
-              { id: "p22" },
-            ],
-          },
-        ],
-        products: [],
-      },
-      {
-        id: "8",
-        name: "Clothes for men",
-        description: "Men's clothing",
-        imageUrl: null,
-        imagePublicId: null,
-        isActive: false,
-        createdAt: new Date("2023-01-08"),
-        updatedAt: new Date("2023-01-08"),
-        parentId: "1",
-        children: [],
-        products: [
-          { id: "p23" },
-          { id: "p24" },
-          { id: "p25" },
-          { id: "p26" },
-          { id: "p27" },
-          { id: "p28" },
-          { id: "p29" },
-          { id: "p30" },
-          { id: "p31" },
-          { id: "p32" },
-          { id: "p33" },
-          { id: "p34" },
-          { id: "p35" },
-        ],
-      },
-    ],
-    products: [{ id: "p1" }, { id: "p2" }, { id: "p3" }],
-  },
-  {
-    id: "4",
-    name: "Shoes",
-    description: "All types of footwear",
-    imageUrl: null,
-    imagePublicId: null,
-    isActive: true,
-    createdAt: new Date("2023-01-04"),
-    updatedAt: new Date("2023-01-04"),
-    parentId: null,
-    children: [],
-    products: [],
-  },
-  {
-    id: "5",
-    name: "Health and Beauty",
-    description: "Health and beauty products",
-    imageUrl: null,
-    imagePublicId: null,
-    isActive: false,
-    createdAt: new Date("2023-01-05"),
-    updatedAt: new Date("2023-01-05"),
-    parentId: null,
-    children: [],
-    products: [
-      { id: "p9" },
-      { id: "p10" },
-      { id: "p11" },
-      { id: "p12" },
-      { id: "p13" },
-    ],
-  },
-];
-
-export default function CategoryTable() {
+export default function CategoryTable({
+  categoriesData,
+}: {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  categoriesData: any[];
+}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentPage = Number(searchParams.get("page")) || 1;
   const [categories, setCategories] = useState<
-    (Category & { level: number })[]
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (any & { level: number })[]
   >([]);
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(
     new Set(["1"])
@@ -215,9 +63,9 @@ export default function CategoryTable() {
 
   useEffect(() => {
     const flattenCategories = (
-      categories: Category[],
+      categories: any[],
       level = 0
-    ): (Category & { level: number })[] => {
+    ): (any & { level: number })[] => {
       return categories.flatMap((category) => {
         const flattenedCategory = { ...category, level };
         if (
@@ -232,7 +80,8 @@ export default function CategoryTable() {
         return [flattenedCategory];
       });
     };
-    const flattenedCategories = flattenCategories(mockCategories);
+    console.log(categoriesData);
+    const flattenedCategories = flattenCategories(categoriesData);
     const start = (currentPage - 1) * ITEMS_PER_PAGE;
     const paginatedData = flattenedCategories.slice(
       start,
@@ -240,7 +89,7 @@ export default function CategoryTable() {
     );
     setCategories(paginatedData);
     setTotalPages(Math.ceil(flattenedCategories.length / ITEMS_PER_PAGE));
-  }, [currentPage, expandedCategories]);
+  }, [currentPage, expandedCategories, categoriesData]);
 
   const createQueryString = useCallback(
     (name: string, value: string) => {
@@ -282,7 +131,7 @@ export default function CategoryTable() {
                   className="flex items-center gap-2"
                   style={{ paddingLeft: `${category.level * 24}px` }}
                 >
-                  {category.children.length > 0 && (
+                  {category.children?.length > 0 && (
                     <button
                       onClick={() => toggleCategory(category.id)}
                       className="p-1 hover:bg-accent rounded-sm"
@@ -297,8 +146,15 @@ export default function CategoryTable() {
                   <span className="font-medium">{category.name}</span>
                 </div>
               </TableCell>
-              <TableCell>{category.description || "-"}</TableCell>
-              <TableCell>{category.products.length} products</TableCell>
+              <TableCell
+                className="w-[35rem]"
+                title={category.description || ""}
+              >
+                <span className="line-clamp-1">
+                  {category.description || "-"}
+                </span>
+              </TableCell>
+              <TableCell>{category._count.products} products</TableCell>
               <TableCell>
                 <Select
                   defaultValue={category.isActive ? "active" : "inactive"}
