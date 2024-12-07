@@ -28,6 +28,7 @@ import {
   Plus,
 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -143,7 +144,17 @@ export default function CategoryTable({
                       )}
                     </button>
                   )}
-                  <span className="font-medium">{category.name}</span>
+                  <div className="flex items-center gap-2">
+                    <div className="size-12 relative">
+                      <Image
+                        src={category.imageUrl}
+                        alt={category.name}
+                        fill
+                        className="object-cover rounded-sm"
+                      />
+                    </div>
+                    <span className="font-medium">{category.name}</span>
+                  </div>
                 </div>
               </TableCell>
               <TableCell

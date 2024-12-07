@@ -4,7 +4,7 @@ import CategoryTable from "./_components/CategoryTable";
 import api from "@/lib/api";
 import { ApiResponse } from "../../../../lib/api";
 
-export const CategoryTableSuspense = async () => {
+const CategoryTableSuspense = async () => {
   const { data }: { data: ApiResponse } = await api.get("/categories");
   const categoriesData = data.data;
   return <CategoryTable categoriesData={categoriesData} />;
