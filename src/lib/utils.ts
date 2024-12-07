@@ -1,8 +1,8 @@
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 /**
@@ -16,5 +16,3 @@ export async function fileToDataUri(file: File): Promise<string> {
   const dataUri = `data:${file.type};base64,${base64}`;
   return dataUri;
 }
-
-

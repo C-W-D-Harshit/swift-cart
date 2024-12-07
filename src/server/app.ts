@@ -7,6 +7,7 @@ import { csrf } from "hono/csrf";
 import { cors } from "hono/cors";
 import { compress } from "hono/compress";
 import productRouter from "./routes/productRoutes";
+import categoryRouter from "./routes/categoryRoutes";
 
 const app = new Hono().basePath("/api");
 
@@ -23,5 +24,6 @@ app.get("/", (c) => {
 });
 
 app.route("/products", productRouter);
+app.route("/categories", categoryRouter);
 
 export default app;

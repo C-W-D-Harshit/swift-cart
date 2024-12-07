@@ -6,7 +6,8 @@ export const createCategorySchema = z.object({
   }),
   description: z.string().optional(),
   isActive: z.boolean().default(true),
-  image: z.instanceof(File),
+  image: z.any(),
+  imageDataURI: z.string(),
 });
 
 export type CreateCategorySchema = z.infer<typeof createCategorySchema>;

@@ -22,7 +22,11 @@ import { useDropzone } from "react-dropzone";
 import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImageIcon, UploadIcon } from "lucide-react";
-import { createCategorySchema } from "@/server/schema/categorySchema";
+import { createCategorySchema } from "@/schema/categorySchema";
+import api from "@/lib/api";
+import { ApiResponse } from "../../../../../lib/api";
+import { toast } from "sonner";
+import { fileToDataUri } from "@/lib/utils";
 
 export default function CreateCategoryPage() {
   const router = useRouter();
@@ -45,10 +49,11 @@ export default function CreateCategoryPage() {
   });
 
   const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
+    async (acceptedFiles: File[]) => {
       if (acceptedFiles.length > 0) {
         const file = acceptedFiles[0];
         form.setValue("image", file);
+        form.setValue("imageDataURI", await fileToDataUri(file));
         setPreviewImage(URL.createObjectURL(file));
       }
     },
@@ -65,12 +70,23 @@ export default function CreateCategoryPage() {
 
   async function onSubmit(values: z.infer<typeof createCategorySchema>) {
     setIsSubmitting(true);
-    // Here you would typically send the data to your API
     console.log(values);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+
+    try {
+      const { data }: { data: ApiResponse } = await api.post(
+        "/categories/create",
+        values
+      );
+      if (data.success) {
+        toast.success(data.message);
+        router.push("/admin/products/categories");
+      } else {
+        throw new Error(data.error || "Something went wrong");
+      }
+    } catch (error) {
+      toast.error((error as Error).message);
+    }
     setIsSubmitting(false);
-    router.push("/categories");
   }
 
   console.log(form.getValues());
