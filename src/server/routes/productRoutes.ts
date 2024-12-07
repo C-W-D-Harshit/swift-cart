@@ -4,17 +4,8 @@
  */
 
 import { prisma } from "@/lib/prisma";
+import redis, { PRODUCT_CACHE_KEY, PRODUCTS_CACHE_KEY } from "@/lib/redis";
 import { Hono } from "hono";
-import { Redis } from "@upstash/redis";
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-const CACHE_KEY_PREFIX = "swift-cart:";
-const PRODUCTS_CACHE_KEY = `${CACHE_KEY_PREFIX}products`;
-const PRODUCT_CACHE_KEY = (id: string) => `${CACHE_KEY_PREFIX}product:${id}`;
 
 const productRouter = new Hono();
 

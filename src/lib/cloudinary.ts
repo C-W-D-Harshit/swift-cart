@@ -6,5 +6,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
   secure: true,
 });
+export async function handleUpload(file: string, folder: string) {
+  const res = await cloudinary.uploader.upload(file, {
+    resource_type: "auto",
+    folder: "swift-cart/"+folder,
+  });
+  return res;
+}
 
 export default cloudinary;

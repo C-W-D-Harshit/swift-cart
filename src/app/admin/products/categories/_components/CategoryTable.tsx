@@ -26,6 +26,7 @@ import {
   PencilIcon,
   Plus,
 } from "lucide-react";
+import Link from "next/link";
 
 interface Category {
   id: string;
@@ -257,9 +258,11 @@ export default function CategoryTable() {
           <Input placeholder="Search categories" className="max-w-xs" />
           <Button variant="outline">Filters</Button>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" /> Create Category
-        </Button>
+        <Link href="/admin/products/categories/create">
+          <Button>
+            <Plus className="mr-2 h-4 w-4" /> Create Category
+          </Button>
+        </Link>
       </div>
       <Table>
         <TableHeader>
