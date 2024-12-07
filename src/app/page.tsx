@@ -8,11 +8,17 @@ import Testimonials from "./_components/Testimonials";
 export default async function Home() {
   return (
     <main>
+      {/* Hero Section */}
       <Hero />
+      {/* Featured Categories */}
       <FeaturedCategories />
+      {/* Featured Products */}
       <FeaturedProducts />
+      {/* Testimonials */}
       <Testimonials />
+      {/* New Arrivals */}
       <NewArrivals />
+      {/* Promo Banner */}
       <PromoBanner />
     </main>
   );
