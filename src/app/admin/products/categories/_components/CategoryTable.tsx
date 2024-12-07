@@ -119,7 +119,7 @@ export default function CategoryTable({
           <TableRow>
             <TableHead className="w-[300px]">Name</TableHead>
             <TableHead>Description</TableHead>
-            <TableHead>Products</TableHead>
+            <TableHead className="text-center">Products</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="text-right">Actions</TableHead>
           </TableRow>
@@ -165,7 +165,9 @@ export default function CategoryTable({
                   {category.description || "-"}
                 </span>
               </TableCell>
-              <TableCell>{category._count.products} products</TableCell>
+              <TableCell className="text-center">
+                {category._count.products}
+              </TableCell>
               <TableCell>
                 <Select
                   defaultValue={category.isActive ? "active" : "inactive"}
