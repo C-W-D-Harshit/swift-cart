@@ -1,7 +1,6 @@
 import { auth } from "@/auth";
 
 export default auth((req) => {
-  console.log("Auth middleware");
   // Redirect to login if not authenticated and trying to access private routes (admin)
   if (
     req.nextUrl.pathname.startsWith("/admin") &&
