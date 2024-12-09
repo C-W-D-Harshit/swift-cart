@@ -35,6 +35,10 @@ import {
 } from "@/components/ui/select";
 import { Loader2, Save } from "lucide-react";
 import { attributesSchema } from "@/schema/attributesSchema";
+import { AttributeValues } from "./AttributeValue";
+import api from "@/lib/api";
+import { toast } from "sonner";
+import { ApiResponse } from "@/lib/api";
 
 type Attribute = z.infer<typeof attributesSchema>;
 
@@ -63,16 +67,29 @@ export function EditAttributeModal({
     }
   }, [open, attribute, form]);
 
-  async function onSubmit(values: Attribute) {
+  async function onSubmit(values: z.infer<typeof attributesSchema>) {
     setIsLoading(true);
-    // Here you would typically send a request to your API
-    console.log(values);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const toastId = toast.loading("Updating attribute...");
+    try {
+      const { data }: { data: ApiResponse } = await api.put(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        `/attributes/${(attribute as any).id as string}`,
+        values
+      );
+      if (data.success) {
+        toast.success("Attribute updated successfully", { id: toastId });
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to update attribute", { id: toastId });
+    }
     setIsLoading(false);
-    setOpen(false);
     // Refresh the current route
     router.refresh();
+    // Close the modal (you might need to implement this logic in the parent component)
+    setOpen(false);
   }
 
   return (
@@ -181,6 +198,25 @@ export function EditAttributeModal({
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="values"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Attribute Values</FormLabel>
+                  <FormControl>
+                    <AttributeValues
+                      values={field.value}
+                      onChange={field.onChange}
+                    />
+                  </FormControl>
+                  <FormDescription>
+                    Add possible values for this attribute.
+                  </FormDescription>
+                  <FormMessage />
                 </FormItem>
               )}
             />

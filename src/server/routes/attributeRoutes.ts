@@ -13,6 +13,9 @@ attributesRouter.get("/", async (c) => {
       orderBy: {
         displayOrder: "asc",
       },
+      include: {
+        values: true,
+      },
     });
 
     return c.json<ApiResponse>({

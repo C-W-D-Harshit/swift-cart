@@ -46,7 +46,7 @@ export function AttributeValues({ values, onChange }: AttributeValuesProps) {
         </Button>
       </div>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 md:grid-cols-4">
-        {values.map((value) => (
+        {values?.map((value) => (
           <div
             key={value.id}
             className="flex items-center justify-between rounded-md border p-2"
