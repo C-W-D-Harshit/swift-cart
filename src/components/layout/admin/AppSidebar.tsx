@@ -45,15 +45,15 @@ const data = {
       items: [
         {
           title: "All Products",
-          url: "/admin/products/all",
-        },
-        {
-          title: "Add New Product",
-          url: "/admin/products/new",
+          url: "/admin/products",
         },
         {
           title: "Categories",
           url: "/admin/products/categories",
+        },
+        {
+          title: "Attributes",
+          url: "/admin/products/attributes",
         },
       ],
     },

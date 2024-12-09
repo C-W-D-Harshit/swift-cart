@@ -27,8 +27,15 @@ import {
 } from "@/components/ui/select";
 import { Loader2, Save } from "lucide-react";
 import { attributesSchema } from "@/schema/attributesSchema";
+import api, { ApiResponse } from "@/lib/api";
+import { toast } from "sonner";
+import { AttributeValues } from "./AttributeValue";
 
-export default function CreateAttributeForm() {
+export default function CreateAttributeForm({
+  setOpen,
+}: {
+  setOpen: (open: boolean) => void;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
 
@@ -39,25 +46,38 @@ export default function CreateAttributeForm() {
       description: "",
       isRequired: false,
       displayOrder: 0,
+      values: [],
     },
   });
 
   async function onSubmit(values: z.infer<typeof attributesSchema>) {
     setIsLoading(true);
-    // Here you would typically send a request to your API
-    console.log(values);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const toastId = toast.loading("Creating attribute...");
+    try {
+      const { data }: { data: ApiResponse } = await api.post(
+        "/attributes",
+        values
+      );
+      if (data.success) {
+        toast.success("Attribute created successfully", { id: toastId });
+      } else {
+        throw new Error(data.error);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to create attribute", { id: toastId });
+    }
     setIsLoading(false);
     // Refresh the current route
     router.refresh();
     // Close the modal (you might need to implement this logic in the parent component)
+    setOpen(false);
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           <FormField
             control={form.control}
             name="name"
@@ -65,11 +85,7 @@ export default function CreateAttributeForm() {
               <FormItem>
                 <FormLabel>Name</FormLabel>
                 <FormControl>
-                  <Input
-                    placeholder="e.g. Color, Size"
-                    {...field}
-                    className="w-full"
-                  />
+                  <Input placeholder="e.g. Color, Size" {...field} />
                 </FormControl>
                 <FormDescription>The name of the attribute.</FormDescription>
                 <FormMessage />
@@ -92,12 +108,16 @@ export default function CreateAttributeForm() {
                     </SelectTrigger>
                   </FormControl>
                   <SelectContent>
-                    <SelectItem value="0">0 (Highest Priority)</SelectItem>
-                    <SelectItem value="10">10</SelectItem>
-                    <SelectItem value="20">20</SelectItem>
-                    <SelectItem value="30">30</SelectItem>
-                    <SelectItem value="40">40</SelectItem>
-                    <SelectItem value="50">50 (Lowest Priority)</SelectItem>
+                    {[0, 10, 20, 30, 40, 50].map((value) => (
+                      <SelectItem key={value} value={value.toString()}>
+                        {value}{" "}
+                        {value === 0
+                          ? "(Highest Priority)"
+                          : value === 50
+                          ? "(Lowest Priority)"
+                          : ""}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
                 <FormDescription>
@@ -146,6 +166,25 @@ export default function CreateAttributeForm() {
                   onCheckedChange={field.onChange}
                 />
               </FormControl>
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="values"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Attribute Values</FormLabel>
+              <FormControl>
+                <AttributeValues
+                  values={field.value}
+                  onChange={field.onChange}
+                />
+              </FormControl>
+              <FormDescription>
+                Add possible values for this attribute.
+              </FormDescription>
+              <FormMessage />
             </FormItem>
           )}
         />

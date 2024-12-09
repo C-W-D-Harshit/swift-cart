@@ -1,4 +1,6 @@
-import { Suspense } from "react";
+"use client";
+
+import { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,8 +14,9 @@ import { PlusCircle } from "lucide-react";
 import CreateAttributeForm from "./CreateAttributeForm";
 
 export default function CreateAttributeDialog() {
+  const [open, setOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" className="gap-2">
           <PlusCircle className="h-4 w-4" />
@@ -37,7 +40,7 @@ export default function CreateAttributeDialog() {
             </div>
           }
         >
-          <CreateAttributeForm />
+          <CreateAttributeForm setOpen={setOpen} />
         </Suspense>
       </DialogContent>
     </Dialog>

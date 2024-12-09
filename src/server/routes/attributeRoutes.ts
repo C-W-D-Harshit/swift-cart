@@ -37,7 +37,15 @@ attributesRouter.post("/", zValidator("json", attributesSchema), async (c) => {
   try {
     const data = c.req.valid("json");
     const attribute = await prisma.attribute.create({
-      data,
+      data: {
+        name: data.name,
+        description: data.description,
+        isRequired: data.isRequired,
+        displayOrder: data.displayOrder,
+        values: {
+          create: data.values.map((value) => ({ value: value.value })),
+        },
+      },
     });
 
     return c.json<ApiResponse>({
@@ -66,9 +74,23 @@ attributesRouter.put(
       const id = c.req.param("id");
       const data = c.req.valid("json");
 
+      await prisma.attributeValue.deleteMany({
+        where: {
+          attributeId: id,
+        },
+      });
+
       const attribute = await prisma.attribute.update({
         where: { id },
-        data,
+        data: {
+          name: data.name,
+          description: data.description,
+          isRequired: data.isRequired,
+          displayOrder: data.displayOrder,
+          values: {
+            create: data.values.map((value) => ({ value: value.value })),
+          },
+        },
       });
 
       return c.json<ApiResponse>({

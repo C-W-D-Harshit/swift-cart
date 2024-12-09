@@ -1,59 +1,8 @@
 import { Suspense } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
+
 import CreateAttributeDialog from "./_components/CreateAttributeDialog";
-import { EditAttributeModal } from "./_components/EditAttributeModal";
-
-interface Attribute {
-  id: string;
-  name: string;
-  description: string;
-  isRequired: boolean;
-  displayOrder: number;
-}
-
-const mockAttributes: Attribute[] = [
-  {
-    id: "1",
-    name: "Color",
-    description: "Product color",
-    isRequired: true,
-    displayOrder: 1,
-  },
-  {
-    id: "2",
-    name: "Size",
-    description: "Product size",
-    isRequired: true,
-    displayOrder: 2,
-  },
-  {
-    id: "3",
-    name: "Material",
-    description: "Product material",
-    isRequired: true,
-    displayOrder: 3,
-  },
-  {
-    id: "4",
-    name: "Weight",
-    description: "Product weight",
-    isRequired: true,
-    displayOrder: 4,
-  },
-];
-
-async function getAttributes(): Promise<Attribute[]> {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  return mockAttributes;
-}
+import AttributesTable from "./_components/AttributesTable";
+import api, { ApiResponse } from "@/lib/api";
 
 function AttributesHeader() {
   return (
@@ -80,38 +29,13 @@ function TableSkeleton() {
   );
 }
 
-async function AttributesTable() {
-  const attributes = await getAttributes();
+async function AttributeTableSuspense() {
+  const { data }: { data: ApiResponse } = await api.get("/attributes");
+  if (!data.success) {
+    throw new Error(data.error);
+  }
 
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Description</TableHead>
-          <TableHead className="text-right">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {attributes.map((attribute) => (
-          <TableRow key={attribute.id}>
-            <TableCell>{attribute.name}</TableCell>
-            <TableCell>{attribute.description}</TableCell>
-            <TableCell className="text-right">
-              <EditAttributeModal attribute={attribute}>
-                <Button variant="outline" size="sm" className="mr-2">
-                  Edit
-                </Button>
-              </EditAttributeModal>
-              <Button variant="destructive" size="sm">
-                Delete
-              </Button>
-            </TableCell>
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  );
+  return <AttributesTable attributes={data.data} />;
 }
 
 export default function AttributesPage() {
@@ -119,7 +43,7 @@ export default function AttributesPage() {
     <div className="container mx-auto px-4 py-8">
       <AttributesHeader />
       <Suspense fallback={<TableSkeleton />}>
-        <AttributesTable />
+        <AttributeTableSuspense />
       </Suspense>
     </div>
   );
